@@ -2,6 +2,7 @@ package user
 
 import (
 	"database/sql"
+	"errors"
 
 	"github.com/rof20004/go-echo-rest-template-new/database"
 )
@@ -49,9 +50,14 @@ func Insert(user *User) error {
 func Delete(id string) error {
 	sql := "DELETE FROM users WHERE id = ?"
 
-	_, err := database.DB.Exec(sql, id)
+	result, err := database.DB.Exec(sql, id)
 	if err != nil {
 		return err
+	}
+
+	rows, _ := result.RowsAffected()
+	if rows == 0 {
+		return errors.New("Usuário não existe na base de dados => ID: " + id)
 	}
 
 	return nil
